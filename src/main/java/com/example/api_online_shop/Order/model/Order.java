@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "Order")
-@Table(name = "`order`")    
+@Table(name = "`order`")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
