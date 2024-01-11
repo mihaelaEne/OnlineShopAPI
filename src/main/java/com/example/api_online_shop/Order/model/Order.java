@@ -46,8 +46,6 @@ public class Order {
     @NotBlank(message = "orderStatus este necesara")
     private String orderStatus;
 
-
-
     @ManyToOne
     @JoinColumn(name="customer_id")
     private Customer customer;
@@ -56,6 +54,17 @@ public class Order {
     private List<OrderDetails> orderDetails=new ArrayList<>();
 
 
+    public void addOrderDetails(OrderDetails orderDetail){
+        this.orderDetails.add(orderDetail);
+        orderDetail.setOrder(this);
+    }
+
+    public void deleteOrderDetails(OrderDetails orderDetail){
+        if(this.orderDetails.contains(orderDetail)){
+            this.orderDetails.remove(orderDetail);
+            orderDetail.setOrder(null);
+        }
+    }
     @Override
     public String toString() {
         return "Order{" +

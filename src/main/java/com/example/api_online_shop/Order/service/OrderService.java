@@ -13,10 +13,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 @Service
 public class OrderService {
     private OrderRepo orderRepo;
+    private Scanner scanner;
 
     public OrderService(OrderRepo orderRepo) {
         this.orderRepo = orderRepo;
@@ -89,4 +91,15 @@ public class OrderService {
     }
 
 
+
+    @Transactional
+    public void addOrderDetails(){
+        System.out.println("Introduceti mailul comenzii");
+        String orderDetailEmail=scanner.nextLine();
+
+        Optional <Order>searchedOrder=orderRepo.findOrderByOrderEmail(orderDetailEmail);
+        if(searchedOrder.isPresent()){
+            this.order
+        }
+    }
 }
