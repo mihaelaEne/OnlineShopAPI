@@ -9,6 +9,7 @@ import com.example.api_online_shop.Order.exceptions.OrderDoesntExistException;
 import com.example.api_online_shop.Order.exceptions.OrderExistException;
 import com.example.api_online_shop.Order.model.Order;
 import com.example.api_online_shop.Order.repository.OrderRepo;
+import com.example.api_online_shop.OrderDetails.model.OrderDetails;
 import com.example.api_online_shop.Product.model.Product;
 import com.example.api_online_shop.Product.repository.ProductRepo;
 import jakarta.transaction.Transactional;
@@ -22,6 +23,7 @@ import java.util.Scanner;
 public class OrderService {
     private OrderRepo orderRepo;
     private ProductRepo productRepo;
+
 
 
 
@@ -90,4 +92,31 @@ public class OrderService {
 //
 //        Optional <ProductDetailsDto> findProductById= productRepo.findById()
 //    }
+
+
+    public Order createOrderWithDetails() {
+        Order newOrder = new Order();
+
+        Optional<Product> product1 = productRepo.findById(1L);
+        product1.ifPresent(p -> addOrderDetails(newOrder, p, 5));
+
+        Optional<Product> product2 = productRepo.findById(2L);
+        product2.ifPresent(p -> addOrderDetails(newOrder, p, 3));
+
+
+
+        return orderRepo.save(newOrder);
+    }
+
+    private void addOrderDetails(Order order, Product product, int quantity) {
+        OrderDetails orderDetails = new OrderDetails();
+        orderDetails.setProduct(product);
+        orderDetails.setQuantity(quantity);
+        orderDetails.setOrder(order);
+
+        order.addOrderDetails(orderDetails);
+    }
+
+
+
 }
