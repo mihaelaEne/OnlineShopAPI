@@ -2,12 +2,16 @@ package com.example.api_online_shop.Order.service;
 
 import com.example.api_online_shop.Order.dtos.CreateOrderRequest;
 import com.example.api_online_shop.Order.dtos.CreateOrderResponse;
+import com.example.api_online_shop.Order.dtos.ProductDetailsDto;
 import com.example.api_online_shop.Order.dtos.UpdateOrderRequest;
 import com.example.api_online_shop.Order.exceptions.NoUpdateException;
 import com.example.api_online_shop.Order.exceptions.OrderDoesntExistException;
 import com.example.api_online_shop.Order.exceptions.OrderExistException;
 import com.example.api_online_shop.Order.model.Order;
 import com.example.api_online_shop.Order.repository.OrderRepo;
+import com.example.api_online_shop.OrderDetails.model.OrderDetails;
+import com.example.api_online_shop.Product.model.Product;
+import com.example.api_online_shop.Product.repository.ProductRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +22,15 @@ import java.util.Scanner;
 @Service
 public class OrderService {
     private OrderRepo orderRepo;
-    private Scanner scanner;
+    private ProductRepo productRepo;
 
-    public OrderService(OrderRepo orderRepo) {
+
+
+
+
+    public OrderService(OrderRepo orderRepo,ProductRepo productRepo) {
         this.orderRepo = orderRepo;
+        this.productRepo=productRepo;
     }
 
     public List<Order> getAllOrders() {
@@ -32,28 +41,15 @@ public class OrderService {
         return all;
     }
 
-    @Transactional
-
-    public CreateOrderResponse addOrder(CreateOrderRequest createOrderRequest) {
-        Optional<Order> orderByOrderEmail = orderRepo.findOrderByOrderEmail(createOrderRequest.getOrderEmail());
-
-        if (orderByOrderEmail.isPresent()) {
-            throw new OrderExistException();
-        }
-
-        Order order = Order.builder()
-                .ammount(createOrderRequest.getAmmount())
-                .shippingAdress(createOrderRequest.getShippingAdress())
-                .orderAdress(createOrderRequest.getOrderAdress())
-                .orderEmail(createOrderRequest.getOrderEmail())
-                .orderStatus(createOrderRequest.getOrderStatus())
-                .build();
-
-        Order order1=orderRepo.saveAndFlush(order);
+//    @Transactional
+//
+//    public CreateOrderResponse addOrder(CreateOrderRequest createOrderRequest) {
+//
+//
+//
+//    }
 
 
-        return CreateOrderResponse.builder().order(order1).build();
-    }
 
     @Transactional
     public void deleteOrder(long id){
@@ -91,15 +87,36 @@ public class OrderService {
     }
 
 
+//    @Transactional
+//    public void addProductDetails(){
+//
+//        Optional <ProductDetailsDto> findProductById= productRepo.findById()
+//    }
 
-    @Transactional
-    public void addOrderDetails(){
-        System.out.println("Introduceti mailul comenzii");
-        String orderDetailEmail=scanner.nextLine();
 
-        Optional <Order>searchedOrder=orderRepo.findOrderByOrderEmail(orderDetailEmail);
-        if(searchedOrder.isPresent()){
-            this.order
-        }
+    public Order createOrderWithDetails() {
+        Order newOrder = new Order();
+
+        Optional<Product> product1 = productRepo.findById(1L);
+        product1.ifPresent(p -> addOrderDetails(newOrder, p, 5));
+
+        Optional<Product> product2 = productRepo.findById(2L);
+        product2.ifPresent(p -> addOrderDetails(newOrder, p, 3));
+
+
+
+        return orderRepo.save(newOrder);
     }
+
+    private void addOrderDetails(Order order, Product product, int quantity) {
+        OrderDetails orderDetails = new OrderDetails();
+        orderDetails.setProduct(product);
+        orderDetails.setQuantity(quantity);
+        orderDetails.setOrder(order);
+
+        order.addOrderDetails(orderDetails);
+    }
+
+
+
 }
